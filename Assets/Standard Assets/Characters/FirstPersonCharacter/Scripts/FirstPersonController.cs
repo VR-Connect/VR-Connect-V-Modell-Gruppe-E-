@@ -42,11 +42,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float m_NextStep;
         private bool m_Jumping;
         private AudioSource m_AudioSource;
+        private Animator animController;
+        private bool walking;
 
         // Use this for initialization
         private void Start()
         {
             m_CharacterController = GetComponent<CharacterController>();
+            animController = GetComponent<Animator>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
             m_FovKick.Setup(m_Camera);
@@ -82,6 +85,18 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+            if (m_IsWalking == false)
+            {
+                animController.SetFloat("Speed", 2);
+            }else if(walking)
+            {
+                animController.SetFloat("Speed", 1);
+            }
+            else
+            {
+                animController.SetFloat("Speed", 0);
+            }
         }
 
 
@@ -148,6 +163,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 m_StepCycle += (m_CharacterController.velocity.magnitude + (speed*(m_IsWalking ? 1f : m_RunstepLenghten)))*
                              Time.fixedDeltaTime;
+                walking = true;
+            }
+            else
+            {
+                walking = false;
             }
 
             if (!(m_StepCycle > m_NextStep))
